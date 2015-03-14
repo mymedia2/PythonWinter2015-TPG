@@ -67,6 +67,21 @@ class Matrix(Vector):
     def __str__(self):
         return "(" + "|\n ".join(" ".join(str(el) for el in s) for s in self) + ")"
 
+    def __mul__(self, b):
+        a = self
+        if type(a) is not type(b):
+            return super(self.__class__, self).__mul__(b)
+            return b * a
+        c = []
+        for i in range(len(a)):
+            c.append([None]*len(b[0]))
+        for i in range(len(a)):
+            for j in range(len(b[0])):
+                c[i][j] = sum(a[i][s]*b[s][j] for s in range(len(a[i])))
+        if len(c) == 1 and len(c[0]) == 1:
+            return c[0][0]
+        return self.__class__(c)
+
 class Calc(tpg.Parser):
     r"""
 
