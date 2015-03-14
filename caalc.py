@@ -85,13 +85,15 @@ calc = Calc()
 Vars={}
 PS1='--> '
 
-Stop=False
-while not Stop:
-    line = input(PS1)
+while True:
     try:
+        line = input(PS1)
         res = calc(line)
     except tpg.Error as exc:
         print(exc, file=sys.stderr)
         res = None
+    except (EOFError, KeyboardInterrupt):
+        print()
+        break
     if res != None:
         print(res)
