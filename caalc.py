@@ -6,6 +6,7 @@ import readline
 import sys
 import tpg
 import itertools
+import argparse
 
 # Скорее всего, это дело стоит вынести в отдельный модуль или
 # поискать уже готовые решения. В этом месте стоит хранть лишь
@@ -85,15 +86,21 @@ calc = Calc()
 Vars={}
 PS1='--> '
 
-while True:
+def interactive_inputer(prompt=""):
     try:
-        line = input(PS1)
-        res = calc(line)
-    except tpg.Error as exc:
-        print(exc, file=sys.stderr)
-        res = None
+        while True:
+            yield input(prompt)
     except (EOFError, KeyboardInterrupt):
         print()
-        break
-    if res != None:
-        print(res)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='?', type=open, default=interactive_inputer(PS1))
+args = parser.parse_args()
+
+for line in args.files:
+    try:
+        res = calc(line)
+        if res is not None:
+            print(res)
+    except BaseException as err:
+        print(err, file=sys.stderr)
