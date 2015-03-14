@@ -70,6 +70,7 @@ class Matrix(Vector):
         return "(" + "|\n ".join(" ".join("{0:^{1}}".format(str(el), w+1)[:-1] for el, w in zip(s, width)) for s in self) + ")"
 
     def __mul__(self, b):
+        # 0_o
         a = self
         if type(a) is not type(b):
             return super(self.__class__, self).__mul__(b)
@@ -128,13 +129,13 @@ def interactive_inputer(prompt=""):
 def app():
     calc = Calc()
     Vars={}
-    PS1='--> '
+    PS1="--> "
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('files', nargs='?', type=open, default=interactive_inputer(PS1))
+    parser.add_argument('file', nargs='?', type=open, default=interactive_inputer(PS1))
     args = parser.parse_args()
 
-    for line in args.files:
+    for line in args.file:
         try:
             res = calc(line)
             if res is not None:
