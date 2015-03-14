@@ -118,10 +118,6 @@ class Calc(tpg.Parser):
 
     """
 
-calc = Calc()
-Vars={}
-PS1='--> '
-
 def interactive_inputer(prompt=""):
     try:
         while True:
@@ -129,14 +125,22 @@ def interactive_inputer(prompt=""):
     except (EOFError, KeyboardInterrupt):
         print()
 
-parser = argparse.ArgumentParser()
-parser.add_argument('files', nargs='?', type=open, default=interactive_inputer(PS1))
-args = parser.parse_args()
+def app():
+    calc = Calc()
+    Vars={}
+    PS1='--> '
 
-for line in args.files:
-    try:
-        res = calc(line)
-        if res is not None:
-            print(res)
-    except BaseException as err:
-        print(err, file=sys.stderr)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('files', nargs='?', type=open, default=interactive_inputer(PS1))
+    args = parser.parse_args()
+
+    for line in args.files:
+        try:
+            res = calc(line)
+            if res is not None:
+                print(res)
+        except BaseException as err:
+            print(err, file=sys.stderr)
+
+if __name__ == "__main__":
+    app()
