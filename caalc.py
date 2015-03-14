@@ -1,10 +1,18 @@
 #!/usr/bin/python
-# coding: utf
+# -*- coding: utf-8 -*-
 
+from __future__ import division, print_function, unicode_literals
 import readline
 import sys
 import tpg
 import itertools
+
+# Скорее всего, это дело стоит вынести в отдельный модуль или
+# поискать уже готовые решения. В этом месте стоит хранть лишь
+# те функции, которые критичны для работы данного приложения.
+PY2 = sys.version_info[0] == 2
+if PY2:
+    input = raw_input
 
 def make_op(s):
     return {
@@ -36,7 +44,7 @@ class Vector(list):
 
     def __and__(self, a):
         try:
-            return reduce(lambda s, (c,d): s+c*d, zip(self, a), 0)
+            return sum(self * a)
         except TypeError:
             return self.__class__(c and a for c in self)
 
@@ -79,11 +87,11 @@ PS1='--> '
 
 Stop=False
 while not Stop:
-    line = raw_input(PS1)
+    line = input(PS1)
     try:
         res = calc(line)
     except tpg.Error as exc:
-        print >> sys.stderr, exc
+        print(exc, file=sys.stderr)
         res = None
     if res != None:
-        print res
+        print(res)
