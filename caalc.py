@@ -65,13 +65,14 @@ class Matrix(Vector):
             self[i] = Vector(self[i])
 
     def __str__(self):
-        return "(" + "|\n ".join(" ".join(str(el) for el in s) for s in self) + ")"
+        # 😵  :dizzy_face:
+        width = [ max(map(lambda el: len(str(el)), col)) for col in self.by_columns() ]
+        return "(" + "|\n ".join(" ".join("{0:^{1}}".format(str(el), w+1)[:-1] for el, w in zip(s, width)) for s in self) + ")"
 
     def __mul__(self, b):
         a = self
         if type(a) is not type(b):
             return super(self.__class__, self).__mul__(b)
-            return b * a
         c = []
         for i in range(len(a)):
             c.append([None]*len(b[0]))
@@ -81,6 +82,12 @@ class Matrix(Vector):
         if len(c) == 1 and len(c[0]) == 1:
             return c[0][0]
         return self.__class__(c)
+
+    def by_columns(self):
+        for j in range(len(self[0])):
+            yield Vector( self[i][j] for i in range(len(self)) )
+
+    by_rows = Vector.__iter__
 
 class Calc(tpg.Parser):
     r"""
