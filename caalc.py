@@ -55,6 +55,18 @@ class Vector(list):
         except TypeError:
             return self.__class__(c or a for c in self)
 
+class Matrix(Vector):
+    def __init__(self, vect):
+        super(self.__class__, self).__init__(vect)
+        for i in range(len(self) - 1):
+            if len(self[i]) != len(self[i + 1]):
+                raise AttributeError("Inconsistent matrix dimensions")
+        for i in range(len(self)):
+            self[i] = Vector(self[i])
+
+    def __str__(self):
+        return "(" + "|\n ".join(" ".join(str(el) for el in s) for s in self) + ")"
+
 class Calc(tpg.Parser):
     r"""
 
@@ -72,12 +84,14 @@ class Calc(tpg.Parser):
     Assign -> id/i '=' Expr/e $Vars[i]=e$ ;
     Expr/t -> Fact/t ( op1/op Fact/f $t=op(t,f)$ )* ;
     Fact/f -> Atom/f ( op2/op Atom/a $f=op(f,a)$ )* ;
-    Atom/a ->   Vector/a
+    Atom/a ->   Vector/a | Matrix/a
               | id/i ( check $i in Vars$ | error $"Undefined variable '{}'".format(i)$ ) $a=Vars[i]$
               | fnumber/a
               | number/a
               | '\(' Expr/a '\)' ;
     Vector/$Vector(a)$ -> '\[' '\]' $a=[]$ | '\[' Atoms/a '\]' ;
+    Matrix/$Matrix(a)$ ->   '\(' Atom/t Atoms/e '\)' $a=[[t]+e]$ 
+                          | '\(' Atoms/t $a=[t]$ ('\|' Atoms/e $a.append(e)$ )+ '\)' ;
     Atoms/v -> Atom/a Atoms/t $v=[a]+t$ | Atom/a $v=[a]$ ;
 
     """
