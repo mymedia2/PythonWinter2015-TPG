@@ -111,10 +111,10 @@ class Calc(tpg.Parser):
               | fnumber/a
               | number/a
               | '\(' Expr/a '\)' ;
-    Vector/$Vector(a)$ -> '\[' '\]' $a=[]$ | '\[' Atoms/a '\]' ;
-    Matrix/$Matrix(a)$ ->   '\(' Atom/t Atoms/e '\)' $a=[[t]+e]$ 
-                          | '\(' Atoms/t $a=[t]$ ('\|' Atoms/e $a.append(e)$ )+ '\)' ;
-    Atoms/v -> Atom/a Atoms/t $v=[a]+t$ | Atom/a $v=[a]$ ;
+    Vector/$Vector(a)$ -> '\[' '\]' $a=[]$ | '\[' Exprs/a '\]' ;
+    Matrix/$Matrix(a)$ ->   '\(' Expr/t Exprs/e '\)' $a=[[t]+e]$ 
+                          | '\(' Exprs/t $a=[t]$ ('\|' Exprs/e $a.append(e)$ )+ '\)' ;
+    Exprs/v -> Expr/a Exprs/t $v=[a]+t$ | Expr/a $v=[a]$ ;
 
     """
 
