@@ -69,19 +69,15 @@ class Matrix(Vector):
         width = [ max(map(lambda el: len(str(el)), col)) for col in self.by_columns() ]
         return "(" + "|\n ".join(" ".join("{0:^{1}}".format(str(el), w+1)[:-1] for el, w in zip(s, width)) for s in self) + ")"
 
-    def __mul__(self, b):
-        # 0_o
-        a = self
-        if type(a) is not type(b):
-            return super(self.__class__, self).__mul__(b)
-        c = []
-        for i in range(len(a)):
-            c.append([None]*len(b[0]))
-        for i in range(len(a)):
-            for j in range(len(b[0])):
-                c[i][j] = sum(a[i][s]*b[s][j] for s in range(len(a[i])))
-        if len(c) == 1 and len(c[0]) == 1:
-            return c[0][0]
+    def __mul__(self, other):
+        if self.__class__ is not other.__class__:
+            return super(self.__class__, self).__mul__(other)
+        c = list()
+        for row in self.by_rows():
+            t = list()
+            for col in other.by_columns():
+                t.append(Vector(row) & Vector(col))
+            c.append(t)
         return self.__class__(c)
 
     def by_columns(self):
