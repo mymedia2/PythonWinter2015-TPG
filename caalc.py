@@ -27,10 +27,13 @@ def make_op(s):
 
 class Vector(list):
     def __init__(self, *argp, **argn):
-        list.__init__(self, *argp, **argn)
+        super(Vector, self).__init__(*argp, **argn)
 
     def __str__(self):
         return "[" + " ".join(str(c) for c in self) + "]"
+
+    def __repr__(self):
+        return self.__class__.__name__ + "(" + repr(list(self)) + ")"
 
     def __op(self, a, op):
         try:
@@ -40,8 +43,10 @@ class Vector(list):
 
     def __add__(self, a): return self.__op(a, lambda c,d: c+d)
     def __sub__(self, a): return self.__op(a, lambda c,d: c-d)
-    def __div__(self, a): return self.__op(a, lambda c,d: c/d)
     def __mul__(self, a): return self.__op(a, lambda c,d: c*d)
+    def __div__(self, a): return self.__op(a, lambda c,d: c/d)
+    def __rmul__(self, a): return self.__op(a, lambda c,d: d*c)
+    def __rdiv__(self, a): return self.__op(a, lambda c,d: d/c)
 
     def __and__(self, a):
         try:
@@ -55,14 +60,18 @@ class Vector(list):
         except TypeError:
             return self.__class__(c or a for c in self)
 
+class MatrixError(ArithmeticError):
+    pass
+
 class Matrix(Vector):
     def __init__(self, vect):
-        super(self.__class__, self).__init__(vect)
+        super(Matrix, self).__init__(vect)
         for i in range(len(self) - 1):
             if len(self[i]) != len(self[i + 1]):
-                raise AttributeError("Inconsistent matrix dimensions")
+                raise MatrixError("Wrong dimension of matrix")
         for i in range(len(self)):
             self[i] = Vector(self[i])
+        self.rows, self.columns = self.m, self.n = len(self), len(self[0])
 
     def __str__(self):
         # 😵  :dizzy_face:
@@ -71,14 +80,19 @@ class Matrix(Vector):
 
     def __mul__(self, other):
         if self.__class__ is not other.__class__:
-            return super(self.__class__, self).__mul__(other)
+            return super(Matrix, self).__mul__(other)
+        if self.columns != other.rows:
+            raise MatrixError("Inconsistent matrix dimensions")
         c = list()
         for row in self.by_rows():
             t = list()
             for col in other.by_columns():
-                t.append(Vector(row) & Vector(col))
+                t.append(row & col)
             c.append(t)
-        return self.__class__(c)
+        matrix = Matrix(c)
+        if matrix.rows == matrix.columns == 1:
+            return matrix[0][0]
+        return matrix
 
     def by_columns(self):
         for j in range(len(self[0])):
