@@ -143,8 +143,14 @@ def app():
     PS1="--> "
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('file', nargs='?', type=open, default=interactive_inputer(PS1))
+    parser.add_argument('file', nargs='?', type=open)
     args = parser.parse_args()
+
+    if not args.file:
+        if sys.stdin.isatty():
+            args.file = interactive_inputer(PS1)
+        else:
+            args.file = sys.stdin
 
     for line in args.file:
         try:
