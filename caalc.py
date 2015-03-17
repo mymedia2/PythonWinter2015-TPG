@@ -136,9 +136,10 @@ def interactive_inputer(prompt=""):
     except (EOFError, KeyboardInterrupt):
         print()
 
+Vars={}
+
 def app():
     calc = Calc()
-    Vars={}
     PS1="--> "
 
     parser = argparse.ArgumentParser()
