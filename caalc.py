@@ -108,14 +108,15 @@ class Calc(tpg.Parser):
 
     token fnumber: '\d+[.]\d*' float ;
     token number: '\d+' int ;
-    token op1: '[|&+-]' make_op ;
+    token op0: '[+-]' make_op ;
+    token op1: '[\|&]' make_op ;
     token op2: '[*/]' make_op ;
     token id: '\w+' ;
 
     START/e -> Operator $e=None$ | Expr/e | $e=None$ ;
     Operator -> Assign ;
     Assign -> id/i '=' Expr/e $Vars[i]=e$ ;
-    Expr/t -> Fact/t ( op1/op Fact/f $t=op(t,f)$ )* ;
+    Expr/t -> Fact/t ( ( op0/op | op1/op ) Fact/f $t=op(t,f)$ )* ;
     Fact/f -> Atom/f ( op2/op Atom/a $f=op(f,a)$ )* ;
     Atom/a ->   Vector/a | Matrix/a
               | id/i ( check $i in Vars$ | error $"Undefined variable '{}'".format(i)$ ) $a=Vars[i]$
