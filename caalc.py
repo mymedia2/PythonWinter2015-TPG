@@ -106,7 +106,7 @@ class Calc(tpg.Parser):
     separator spaces: '\s+' ;
     separator comment: '#.*' ;
 
-    token fnumber: '\d+[.]\d*' float ;
+    token fnumber: '(\d+[.,]\d*)|(\d*[.,]\d+)' $lambda s: float(s.replace(',','.'))$ ;
     token dnumber: '\d+' int ;
     token op0: '[+-]' make_op ;
     token op1: '[\|&]' make_op ;
